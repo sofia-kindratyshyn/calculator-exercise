@@ -32,7 +32,11 @@ export default class CalculatorService implements CalculatorServiceType {
     if (this.firstOperand === null) {
       this.firstOperand = inputValue;
     } else if (this.operator) {
-      const result = this.performOperation(this.firstOperand, inputValue, this.operator);
+      const result = this.performOperation(
+        this.firstOperand,
+        inputValue,
+        this.operator
+      );
       this.displayValue = String(result);
       this.firstOperand = result;
       this.callback(this.displayValue);
@@ -42,7 +46,11 @@ export default class CalculatorService implements CalculatorServiceType {
   }
 
   // Perform calculation
-  private performOperation(first: number, second: number, operator: string): number {
+  private performOperation(
+    first: number,
+    second: number,
+    operator: string
+  ): number {
     switch (operator) {
       case "+":
         return first + second;
@@ -61,7 +69,11 @@ export default class CalculatorService implements CalculatorServiceType {
   public inputEquals(): void {
     if (this.operator && this.firstOperand !== null) {
       const inputValue = parseFloat(this.displayValue);
-      const result = this.performOperation(this.firstOperand, inputValue, this.operator);
+      const result = this.performOperation(
+        this.firstOperand,
+        inputValue,
+        this.operator
+      );
       this.displayValue = String(result);
       this.firstOperand = null;
       this.operator = null;
@@ -95,5 +107,5 @@ export default class CalculatorService implements CalculatorServiceType {
     } else if (key === "C") {
       this.clear();
     }
-  }
+  };
 }
