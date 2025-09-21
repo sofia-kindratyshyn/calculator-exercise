@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import Button from "./Button";
 
 interface ButtonPanelProps {
@@ -10,15 +10,17 @@ const ButtonPanel: React.FC<ButtonPanelProps> = ({
   buttons,
   onButtonClick,
 }) => {
+  const handleButtonClick = useCallback((btn: string) => {
+    onButtonClick(btn);
+  }, [onButtonClick]);
+
   return (
     <div className="calculator-buttons">
       {buttons.map((btn) => (
         <Button
           key={btn}
           value={btn}
-          onClick={() => {
-            onButtonClick(btn);
-          }}
+          onClick={() => handleButtonClick(btn)}
         />
       ))}
     </div>

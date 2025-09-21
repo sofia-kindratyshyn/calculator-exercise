@@ -5,13 +5,15 @@ interface ButtonProps {
   onClick: MouseEventHandler<HTMLButtonElement>
 }
 
-const Button: React.FC<ButtonProps> = ({ value, onClick }) => (
+const Button: React.FC<ButtonProps> = React.memo(({ value, onClick }) => (
   <button
     className={`calc-btn calc-btn-${value}`}
     onClick={onClick}
   >
     {value}
   </button>
-);
+));
+
+Button.displayName = 'Button';
 
 export default Button;
