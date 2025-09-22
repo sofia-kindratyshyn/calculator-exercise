@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useRef, useState } from "react";
-import CalculatorService from "./CalculatorService";
+import CalculatorService from "../services/CalculatorService";
 
 interface CalculatorContextProps {
   service: CalculatorService;
@@ -7,15 +7,19 @@ interface CalculatorContextProps {
   setDisplayValue: (value: string) => void;
 }
 
-const CalculatorContext = createContext<CalculatorContextProps | undefined>(undefined);
+const CalculatorContext = createContext<CalculatorContextProps | undefined>(
+  undefined
+);
 
 export const useCalculatorContext = () => {
   const ctx = useContext(CalculatorContext);
   if (!ctx) throw new Error("CalculatorContext not found");
-  return {  ...ctx, displayValue: ctx.displayValue };
+  return { ...ctx, displayValue: ctx.displayValue };
 };
 
-export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [displayValue, setDisplayValue] = useState<string>("0");
   // @ts-ignore
   const serviceRef = useRef<CalculatorService>();
@@ -23,7 +27,9 @@ export const CalculatorProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     serviceRef.current = new CalculatorService(setDisplayValue);
   }
   return (
-    <CalculatorContext.Provider value={{ service: serviceRef.current, displayValue, setDisplayValue }}>
+    <CalculatorContext.Provider
+      value={{ service: serviceRef.current, displayValue, setDisplayValue }}
+    >
       {children}
     </CalculatorContext.Provider>
   );
