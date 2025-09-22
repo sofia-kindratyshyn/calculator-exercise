@@ -1,14 +1,17 @@
-import { CalculatorService as CalculatorServiceType } from "./types";
+import { CalculatorService as CalculatorServiceType } from "../types/types";
 
 export default class CalculatorService implements CalculatorServiceType {
   private displayValue: string = "0";
   private firstOperand: number | null = null;
   private waitingForOperand: boolean = false;
   private operator: string | null = null;
+  private expression: string = "";
   private callback: any;
+  private expressionCallback: any;
 
-  constructor(callback: any) {
+  constructor(callback: any, expressionCallback?: any) {
     this.callback = callback;
+    this.expressionCallback = expressionCallback;
   }
 
   // Handle digit or dot input
@@ -23,6 +26,14 @@ export default class CalculatorService implements CalculatorServiceType {
           ? digit
           : this.displayValue + digit;
     }
+
+    if (this.operator && this.firstOperand !== null) {
+      this.expression = `${this.firstOperand}${this.operator}${this.displayValue}`;
+    } else {
+      this.expression = this.displayValue;
+    }
+
+    if (this.expressionCallback) this.expressionCallback(this.expression);
     this.callback(this.displayValue);
   }
 
@@ -43,6 +54,12 @@ export default class CalculatorService implements CalculatorServiceType {
     }
     this.operator = nextOperator;
     this.waitingForOperand = true;
+
+    // Update expression to show operator
+    if (this.firstOperand !== null) {
+      this.expression = `${this.firstOperand}${this.operator}`;
+      if (this.expressionCallback) this.expressionCallback(this.expression);
+    }
   }
 
   // Perform calculation
@@ -51,18 +68,25 @@ export default class CalculatorService implements CalculatorServiceType {
     second: number,
     operator: string
   ): number {
+    let result: number;
     switch (operator) {
       case "+":
-        return first + second;
+        result = first + second;
+        break;
       case "-":
-        return first - second;
+        result = first - second;
+        break;
       case "*":
-        return first * second;
+        result = first * second;
+        break;
       case "/":
-        return second !== 0 ? first / second : NaN;
+        result = second !== 0 ? first / second : NaN;
+        break;
       default:
-        return second;
+        result = second;
     }
+
+    return Math.round(result * 100000000) / 100000000;
   }
 
   // Handle equals
@@ -88,12 +112,36 @@ export default class CalculatorService implements CalculatorServiceType {
     this.firstOperand = null;
     this.operator = null;
     this.waitingForOperand = false;
+    this.expression = "";
+    if (this.expressionCallback) this.expressionCallback(this.expression);
+    this.callback(this.displayValue);
+  }
+
+  public delete(): void {
+    if (this.displayValue.length > 1) {
+      this.displayValue = this.displayValue.slice(0, -1);
+    } else {
+      this.displayValue = "0";
+    }
+
+    if (this.operator && this.firstOperand !== null) {
+      this.expression = `${this.firstOperand}${this.operator}${this.displayValue}`;
+    } else {
+      this.expression = this.displayValue;
+    }
+
+    if (this.expressionCallback) this.expressionCallback(this.expression);
     this.callback(this.displayValue);
   }
 
   // Get current display value
   public getDisplayValue(): string {
     return this.displayValue;
+  }
+
+  // Get current expression
+  public getExpression(): string {
+    return this.expression;
   }
 
   // Main handler for key input
@@ -106,6 +154,8 @@ export default class CalculatorService implements CalculatorServiceType {
       this.inputEquals();
     } else if (key === "C") {
       this.clear();
+    } else if (key === "DEL") {
+      this.delete();
     }
   };
 }
