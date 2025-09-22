@@ -1,5 +1,10 @@
 import { CalculatorService as CalculatorServiceType } from "./types";
 
+// Fix floating-point precision issues
+const fixPrecision = (num: number): number => {
+  return Math.round(num * 100000000) / 100000000;
+};
+
 export default class CalculatorService implements CalculatorServiceType {
   private displayValue: string = "0";
   private firstOperand: number | null = null;
@@ -51,18 +56,24 @@ export default class CalculatorService implements CalculatorServiceType {
     second: number,
     operator: string
   ): number {
+    let result: number;
     switch (operator) {
       case "+":
-        return first + second;
+        result = first + second;
+        break;
       case "-":
-        return first - second;
+        result = first - second;
+        break;
       case "*":
-        return first * second;
+        result = first * second;
+        break;
       case "/":
-        return second !== 0 ? first / second : NaN;
+        result = second !== 0 ? first / second : NaN;
+        break;
       default:
-        return second;
+        result = second;
     }
+    return fixPrecision(result);
   }
 
   // Handle equals
